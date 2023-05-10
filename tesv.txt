@@ -1,0 +1,97 @@
+drop database if exists bd_loja;
+
+create database if not exists bd_loja
+	default character set utf8
+	default collate utf8_general_ci;
+
+	use bd_loja;
+
+create table tb_cliente
+	(
+		pkidcliente int primary key not null auto_increment,
+		nome varchar(100) not null,
+		cpf bigint not null unique
+	)engine InnoDB;
+
+
+create table tb_fornecedor
+	(
+		pkidfornecedor int primary key not null auto_increment,
+		nome varchar(200) not null,
+		cnpj bigint not null unique
+	)engine InnoDB;
+
+create table tb_cargo
+	(
+		pkidcargo int primary key not null auto_increment,
+		nome varchar(45) not null,
+		salario float not null
+	)engine InnoDB;
+
+create table tb_funcionario
+	(
+		pkidfuncionario int primary key not null auto_increment,
+		nome varchar(100) not null,
+		cpf bigint not null,
+		kidcargo int not null,
+		foreign key (fkidcargo) references tb_cargo(pkidcargo)
+	)engine InnoDB;
+
+create table tb_endereco
+	(
+		pkidendereco int primary key not null auto_increment,
+        rua varchar(150) not null,
+        numero int not null,
+        bairro varchar(150),
+        fkidcliente int null,
+        fkidfuncionario int null,
+        fkidfornecedor int null,
+        foreign key (fkidcliente) references tb_cliente(pkidcliente),
+        foreign key (fkidfuncionario) references tb_funcionario(pkidfuncionario),
+        foreign key (fkidfornecedor) references tb_fornecedor(pkidfornecedor)
+	)engine InnoDB;
+    
+create table tb_contato	
+	(
+		pkidcontato int primary key not null auto_increment,
+		telefone varchar(20) not null,
+        email varchar(150) null,
+		fkidcliente int null,
+        fkidfuncionario int null,
+        fkidfornecedor int null,
+        foreign key (fkidcliente) references tb_cliente(pkidcliente),
+        foreign key (fkidfuncionario) references tb_funcionario(pkidfuncionario),
+        foreign key (fkidfornecedor) references tb_fornecedor(pkidfornecedor)
+    )engine InnoDB;
+    
+create table tb_produto
+	(
+		pkidproduto int primary key not null auto_increment,
+        nome varchar(200) not null,
+        valor float not null,
+        fkidfornecedor int not null,
+        foreign key (fkidfornecedor) references tb_fornecedor(pkidfornecedor)
+	)engine InnoDB;
+
+create table tb_venda
+	(
+		pkidvenda int primary key not null auto_increment,
+        datavenda timestamp default current_timestamp,
+        total float not null,
+        fkidcliente int null,
+        fkidfuncionario int  null,
+        foreign key (fkidcliente) references tb_cliente(pkidcliente),
+        foreign key (fkidfuncionario) references tb_funcionario(pkidfuncionario)
+	)engine InnoDB;
+    
+create table tb_itemvenda
+	(
+        fkidvenda int not null,
+        fkidproduto int not null,
+        foreign key (fkidvenda) references tb_venda(pkidvenda),
+        foreign key (fkidproduto) references tb_produto(pkidproduto),
+        primary key (fkidvenda, fkidproduto)
+    )engine InnoDB;
+    
+ 
+
